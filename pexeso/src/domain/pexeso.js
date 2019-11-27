@@ -28,7 +28,9 @@ export class Pexeso {
             }
             this.array.push(row);
         }
-
+        this.controlCoordinates = [];
+        this.controlCoordinates.push(null);
+        this.controlCoordinates.push(null);
 
         this.createPieces();
     }
@@ -51,7 +53,7 @@ export class Pexeso {
         } else this.createTile(value);
     }
     /**
-     * 
+     * creates pieces
      * @param {*} pieceRow 
      * @param {*} pieceColumn 
      */
@@ -59,7 +61,7 @@ export class Pexeso {
         let value = 1;
         for (let a = 0; a < this.rows; a++) {
             for (let b = 0; b < this.columns; b++) {
-                if (value >= (this.rows * this.columns / 2) ) {
+                if (value >= (this.rows * this.columns / 2)) {
                     value = 0;
                 }
                 value++;
@@ -70,7 +72,41 @@ export class Pexeso {
         console.log(this.pieceField);
     }
 
+    /**
+     * saves the piece to the control field
+     * @param {*} x 
+     * @param {*} y 
+     */
+    savePiece(x, y) {
+        if (this.controlCoordinates[0] == null) {
+            this.controlCoordinates[0] = x;
+            this.controlCoordinates[1] = y;
+            console.log( 'kontrolni koordinaty jsou:' + this.controlCoordinates[0], this.controlCoordinates[1]);
+        } else {
+            this.isPair(x, y);
+            this.controlCoordinates[0] = null;
+            this.controlCoordinates[1] = null;
+            console.log('kontrolni koordinaty jsou:' + this.controlCoordinates[0], this.controlCoordinates[1]);
+        }
 
+    }
+    /**
+     * hides the tile at x, y
+     * @param {*} x 
+     * @param {*} y 
+     */
+    hideTile(x, y) {
+        this.array[x][y]  = field.hidden;
+    }
+    
+    /**
+     * returns a value of piece on the field
+     * @param {*} x 
+     * @param {*} y 
+     */
+    getPiece(x, y){
+        return this.pieceField[x][y];
+    }
     /**
      * TODO:
      * checks if the selected cards are a pair or not
@@ -78,11 +114,11 @@ export class Pexeso {
      * @param {number} pairTwo
      * @returns {boolean} 
      */
-    isPair(pairOne, pairTwo) {
-        if (pairOne == pairTwo) {
-            return true
-        } else
-            return false;
+    isPair(x, y) {
+        if (this.getPiece(x, y) != this.getPiece(this.controlCoordinates[0], this.controlCoordinates[1])) {
+            this.hideTile(x, y);
+            this.hideTile(this.controlCoordinates[0], this.controlCoordinates[1]);
+        }
     }
     /**
      * TODO: IMPLEMENT THIS
@@ -93,6 +129,7 @@ export class Pexeso {
     reveal(x, y) {
         if (this.array[y][x] == field.hidden) {
             this.array[y][x] = field.visible;
+            this.savePiece(y, x);
         } else
             this.array[y][x] = field.visible;
 
@@ -105,7 +142,15 @@ export class Pexeso {
      * @returns {boolean}
      */
     didWin() {
-        return false;
+        console.log(this.array)
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                if (this.array[i][j] == field.hidden) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 
