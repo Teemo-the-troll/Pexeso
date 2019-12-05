@@ -1,5 +1,5 @@
 import { field } from "./models/field.js";
-
+import { PexesoGUI } from "../presentation/pexeso-gui.js";
 export class Pexeso {
     /**
      * @param {[]} array
@@ -12,6 +12,8 @@ export class Pexeso {
         this.columns = columns;
         this.pieces = pieces;
         this.pieceField = [];
+        this.controlCoordinates = [null, null];
+        this.controlCoordinates2 = [null, null];
         for (let a = 0; a < rows; a++) {
             let row = [];
             for (let b = 0; b < columns; b++) {
@@ -28,10 +30,6 @@ export class Pexeso {
             }
             this.array.push(row);
         }
-        this.controlCoordinates = [];
-        this.controlCoordinates.push(null);
-        this.controlCoordinates.push(null);
-
         this.createPieces();
     }
     /**
@@ -45,6 +43,7 @@ export class Pexeso {
     getField(x, y) {
         return this.array[x][y];
     }
+
     createTile(value) {
         let pieceRow = Math.floor(Math.random() * this.rows);
         let pieceColumn = Math.floor(Math.random() * this.rows);
@@ -52,6 +51,7 @@ export class Pexeso {
             this.pieceField[pieceColumn][pieceRow] = value;
         } else this.createTile(value);
     }
+
     /**
      * creates pieces
      * @param {*} pieceRow 
@@ -81,12 +81,16 @@ export class Pexeso {
         if (this.controlCoordinates[0] == null) {
             this.controlCoordinates[0] = x;
             this.controlCoordinates[1] = y;
-            console.log( 'kontrolni koordinaty jsou:' + this.controlCoordinates[0], this.controlCoordinates[1]);
-        } else {
-            this.isPair(x, y);
-            this.controlCoordinates[0] = null;
-            this.controlCoordinates[1] = null;
-            console.log('kontrolni koordinaty jsou:' + this.controlCoordinates[0], this.controlCoordinates[1]);
+        } else if (this.controlCoordinates2[0] == null) {
+            this.controlCoordinates2[0] = x;
+            this.controlCoordinates2[1] = y;
+            this.isPair();
+            setTimeout(() => {
+                this.controlCoordinates[0] = null;
+                this.controlCoordinates[1] = null;
+                this.controlCoordinates2[0] = null;
+                this.controlCoordinates2[1] = null;
+            }, 100);
         }
 
     }
@@ -96,30 +100,38 @@ export class Pexeso {
      * @param {*} y 
      */
     hideTile(x, y) {
-        this.array[x][y]  = field.hidden;
+        console.log(this)
+        console.log("x a y jsou: " + x, y)
+        this.array[x][y] = field.hidden;
     }
-    
+
     /**
      * returns a value of piece on the field
      * @param {*} x 
      * @param {*} y 
      */
-    getPiece(x, y){
+    getPiece(x, y) {
         return this.pieceField[x][y];
     }
+
     /**
-     * TODO:
+     * TODO: redo the hiding sequence, and find how the timeout method works
      * checks if the selected cards are a pair or not
      * @param {number} pairOne 
      * @param {number} pairTwo
      * @returns {boolean} 
      */
-    isPair(x, y) {
-        if (this.getPiece(x, y) != this.getPiece(this.controlCoordinates[0], this.controlCoordinates[1])) {
-            this.hideTile(x, y);
-            this.hideTile(this.controlCoordinates[0], this.controlCoordinates[1]);
-        }
+    isPair() {
+        setTimeout(() => {
+            if (this.getPiece(this.controlCoordinates2[0], this.controlCoordinates2[1]) != this.getPiece(this.controlCoordinates[0], this.controlCoordinates[1])) {
+                console.log(this.controlCoordinates)
+                console.log(this.controlCoordinates2)
+                this.hideTile(this.controlCoordinates2[0], this.controlCoordinates2[1]);
+                this.hideTile(this.controlCoordinates[0], this.controlCoordinates[1]);
+            }
+        }, 50);
     }
+
     /**
      * TODO: IMPLEMENT THIS
      * Reveals the field 
@@ -132,8 +144,6 @@ export class Pexeso {
             this.savePiece(y, x);
         } else
             this.array[y][x] = field.visible;
-
-
     }
 
     /**
@@ -143,8 +153,8 @@ export class Pexeso {
      */
     didWin() {
         console.log(this.array)
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.columns; j++) {
                 if (this.array[i][j] == field.hidden) {
                     return false;
                 }

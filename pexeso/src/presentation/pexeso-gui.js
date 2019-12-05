@@ -38,12 +38,10 @@ export class PexesoGUI {
                     this.game.reveal(j, i);
                     this.draw();
                 });
-
                 row.appendChild(cell);
             }
             table.appendChild(row);
         }
-
         this.container.appendChild(header);
         this.container.appendChild(table);
     }

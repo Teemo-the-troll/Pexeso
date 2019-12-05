@@ -8,13 +8,13 @@ window.onload = () => {
 
             if (sizeOfGameField == null || sizeOfGameField == "") {
                 txt = "User cancelled the prompt.";
-            } else { 
+            } else {
                 if (sizeOfGameField % 2 == 0) {
                     const game = new PexesoGUI(component, sizeOfGameField, sizeOfGameField);
                     game.draw();
+                }
+
             }
-                    
-            }
-            
+
         });
 };
